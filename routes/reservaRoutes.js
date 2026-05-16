@@ -38,10 +38,10 @@ router.post('/reservas', async (req, res) => {
     }
 });
 
-// 4. DELETE: Eliminar una reserva por Email (Para tu pantalla EliminarReserva)
-router.delete('/reservas/:email', async (req, res) => {
+// 4. DELETE: Eliminar una reserva por su _id de MongoDB
+router.delete('/reservas/:id', async (req, res) => {
     try {
-        const reservaEliminada = await Reserva.findOneAndDelete({ email: req.params.email });
+        const reservaEliminada = await Reserva.findByIdAndDelete(req.params.id);
         if (!reservaEliminada) return res.status(404).json({ message: "Reserva no encontrada para eliminar" });
         res.json({ message: "Reserva eliminada con éxito" });
     } catch (error) {
@@ -49,14 +49,13 @@ router.delete('/reservas/:email', async (req, res) => {
     }
 });
 
-// 5. PUT: Actualizar una reserva por Email (Para tu pantalla EditarReserva)
-router.put('/reservas/:email', async (req, res) => {
+// 5. PUT: Actualizar una reserva por su _id de MongoDB
+router.put('/reservas/:id', async (req, res) => {
     try {
-        // findOneAndUpdate busca por el email y aplica los cambios que vengan en req.body
-        const reservaActualizada = await Reserva.findOneAndUpdate(
-            { email: req.params.email }, // Criterio de búsqueda
-            req.body,                    // Los nuevos datos que envía Android
-            { new: true }                // ¡Clave! Hace que Mongoose devuelva el objeto ya modificado, no el antiguo
+        const reservaActualizada = await Reserva.findByIdAndUpdate(
+            req.params.id, 
+            req.body,      
+            { new: true }  
         );
 
         if (!reservaActualizada) {
